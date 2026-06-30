@@ -5,6 +5,7 @@ faiss-cpu
 pandas
 python-dotenv
 sentence-transformers
-streamlit==1.24.1
+streamlit>=1.28.0
+pillow>=10.0.0
 pymupdf
 pdfplumber
