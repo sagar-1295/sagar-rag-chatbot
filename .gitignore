@@ -8,3 +8,5 @@ venv/
 .env
 .DS_Store
 .faiss
+.streamlit/secrets.toml
+uploaded_dataset/

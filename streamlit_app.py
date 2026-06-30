@@ -26,7 +26,72 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+# ============================================================================
+# LOGIN SYSTEM
+# ============================================================================
+def check_credentials(username: str, password: str) -> bool:
+    """Validate user credentials from Streamlit Secrets."""
+    try:
+        # Get credentials from Streamlit Secrets
+        valid_users = st.secrets.get("USERS", {})
+        if valid_users and username in valid_users:
+            return valid_users[username] == password
+    except FileNotFoundError:
+        st.error("❌ User credentials not configured. Contact admin.")
+        return False
+    
+    return False
+
+
+def show_login_page():
+    """Display login form."""
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.markdown("# 🔐 Sagar's RAG Chatbot")
+        st.markdown("---")
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+        
+        if st.button("Login", use_container_width=True):
+            if check_credentials(username, password):
+                st.session_state["logged_in"] = True
+                st.session_state["username"] = username
+                st.success(f"Welcome, {username}! 👋")
+                st.experimental_rerun()
+            else:
+                st.error("❌ Invalid username or password")
+
+
+# Initialize session state
+if "logged_in" not in st.session_state:
+    st.session_state["logged_in"] = False
+if "username" not in st.session_state:
+    st.session_state["username"] = None
+
+# Show login page if not logged in
+if not st.session_state["logged_in"]:
+    show_login_page()
+    st.stop()
+
+# ============================================================================
+# MAIN APP (Only visible after login)
+# ============================================================================
 st.title("Sagar's RAG Chatbot")
+
+# Add logout button in top right
+col1, col2 = st.columns([10, 1])
+with col2:
+    if st.button("🚪 Logout"):
+        st.session_state["logged_in"] = False
+        st.session_state["username"] = None
+        st.session_state["rag_chatbot"] = None
+        st.session_state["chat_history"] = []
+        st.success("Logged out successfully!")
+        st.experimental_rerun()
+
+st.markdown(f"*Logged in as: **{st.session_state['username']}***")
+st.markdown("---")
 
 with st.sidebar:
     st.header("Configuration")
@@ -85,7 +150,19 @@ with st.sidebar:
 
     max_rows = st.number_input("Max rows (CSV/Excel)", min_value=10, max_value=100, value=int(get_env("MAX_ROWS", "100")), step=10)
     openai_model = st.text_input("OpenAI model", value=get_env("OPENAI_MODEL", "gpt-5-mini"))
-    openai_key = st.text_input("OpenAI API Key", value=get_env("OPENAI_API_KEY", ""), type="password")
+    
+    # SECURE: Get API key from Streamlit Secrets (production) or environment (local)
+    # Never ask user to input their API key in production!
+    try:
+        openai_key = st.secrets.get("OPENAI_API_KEY", "")
+        if not openai_key:
+            openai_key = get_env("OPENAI_API_KEY", "")
+        if not openai_key:
+            st.warning("⚠️ No OpenAI API key found. Set it in Streamlit Secrets for deployment.")
+    except FileNotFoundError:
+        openai_key = get_env("OPENAI_API_KEY", "")
+        if not openai_key:
+            st.warning("⚠️ No OpenAI API key configured.")
 
     if st.button("Save config"):
         if openai_key:
