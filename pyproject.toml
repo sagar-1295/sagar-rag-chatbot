@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-student-impact-rag"
+version = "0.1.0"
+description = "Conversational RAG chatbot for the AI student impact dataset."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "langchain==0.0.339",
+    "tiktoken",
+    "openai",
+    "faiss-cpu",
+    "pandas",
+    "python-dotenv",
+    "sentence-transformers",
+    "streamlit==1.24.1",
+]
+
+[project.urls]
+"Homepage" = "https://example.com"
