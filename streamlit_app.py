@@ -58,7 +58,7 @@ def show_login_page():
                 st.session_state["logged_in"] = True
                 st.session_state["username"] = username
                 st.success(f"Welcome, {username}! 👋")
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.error("❌ Invalid username or password")
 
@@ -88,7 +88,7 @@ with col2:
         st.session_state["rag_chatbot"] = None
         st.session_state["chat_history"] = []
         st.success("Logged out successfully!")
-        st.experimental_rerun()
+        st.rerun()
 
 st.markdown(f"*Logged in as: **{st.session_state['username']}***")
 st.markdown("---")
