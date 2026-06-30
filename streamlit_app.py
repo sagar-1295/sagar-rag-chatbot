@@ -200,12 +200,12 @@ if st.session_state["rag_chatbot"] is None:
                 except Exception as exc:
                     st.session_state["init_error"] = f"Initialization failed: {exc}"
             st.session_state["initializing"] = False
-            st.experimental_rerun()
+            st.rerun()
     else:
         if st.button("Initialize chat", disabled=st.session_state["initializing"], use_container_width=True):
             st.session_state["initializing"] = True
             st.session_state["init_error"] = None
-            st.experimental_rerun()
+            st.rerun()
 
     if st.session_state["init_error"]:
         st.error(st.session_state["init_error"])
@@ -218,7 +218,7 @@ if st.session_state["rag_chatbot"]:
     with cols[1]:
         if st.button("Clear history"):
             st.session_state["chat_history"] = []
-            st.experimental_rerun()
+            st.rerun()
 
     if st.button("Send") and user_input:
         with st.spinner("Generating response..."):
@@ -228,7 +228,7 @@ if st.session_state["rag_chatbot"]:
             "assistant": result["answer"],
             "sources": result["sources"],
         })
-        st.experimental_rerun()
+        st.rerun()
 
     if st.session_state["chat_history"]:
         st.markdown("<div class='chat-shell'>", unsafe_allow_html=True)
